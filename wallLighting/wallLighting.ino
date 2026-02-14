@@ -4,12 +4,17 @@
 
 #include <Zigbee.h>
 #include <elapsedMillis.h>
+#include <Adafruit_AW9523.h>
 
 #include "zbLight.hpp"
 
 uint8_t bootButton = BOOT_PIN;
 elapsedSeconds timeSinceZigbeeNotConnected;
 const unsigned long ZIGBEE_NOT_CONNECTED_TIMEOUT = 300; // s
+
+Adafruit_AW9523 ledDriver0;
+elapsedMillis ledTimer0;
+bool ledState0 = false;
 
 void factoryResetIfBootIsPressed()
 {
@@ -80,14 +85,19 @@ void setup()
   Serial.begin(115200);
   elapsedMillis timeSinceSerialBegin;
   while (not Serial && timeSinceSerialBegin <= 5000) delay(100);
+  rgbLedWrite(ledBuildin, 0, 0, 0);
+  
+  ledDriver0.begin();
+  ledDriver0.pinMode(0, AW9523_LED_MODE);
+  ledDriver0.analogWrite(0, 255);
 
   // Init RMT and leave light OFF
   rgbLedWrite(ledBuildin, 0, 0, 0);
   // Init button for factory reset
   pinMode(bootButton, INPUT_PULLUP);
 
-  setupZBLight();
-  setupZigbee();
+  //setupZBLight();
+  //setupZigbee();
 
   rgbLedWrite(ledBuildin, 255, 0, 0); // green
   delay(500);
@@ -96,5 +106,12 @@ void setup()
 
 void loop()
 {
-  factoryResetIfBootIsPressed();
+  //factoryResetIfBootIsPressed();
+
+  if (ledTimer0 > 1000)
+  {
+    ledState0 = not ledState0;
+    ledDriver0.analogWrite(0, ledState0 ? 255 : 0);
+    ledTimer0 = 0;
+  }
 }
