@@ -13,6 +13,9 @@ elapsedSeconds timeSinceZigbeeNotConnected;
 const unsigned long ZIGBEE_NOT_CONNECTED_TIMEOUT = 300; // s
 
 Adafruit_AW9523 ledDriver0;
+Adafruit_AW9523 ledDriver1;
+Adafruit_AW9523 ledDriver2;
+Adafruit_AW9523 ledDriver3;
 elapsedMillis ledTimer0;
 bool ledState0 = false;
 
@@ -82,14 +85,28 @@ void setupZigbee()
 
 void setup()
 {
-  Serial.begin(115200);
+  // SCL on pin 22 & SDA on pin 12
+  ledDriver0.begin(AW9523_DEFAULT_ADDR);
+  ledDriver0.configureLEDMode(0xFFFF);
+  ledDriver1.begin(AW9523_DEFAULT_ADDR + 1);
+  ledDriver1.configureLEDMode(0xFFFF);
+  ledDriver2.begin(AW9523_DEFAULT_ADDR + 2);
+  ledDriver2.configureLEDMode(0xFFFF);
+  ledDriver3.begin(AW9523_DEFAULT_ADDR + 3);
+  ledDriver3.configureLEDMode(0xFFFF);
+
+  Serial.begin(9600);
   elapsedMillis timeSinceSerialBegin;
   while (not Serial && timeSinceSerialBegin <= 5000) delay(100);
   rgbLedWrite(ledBuildin, 0, 0, 0);
   
-  ledDriver0.begin();
-  ledDriver0.pinMode(0, AW9523_LED_MODE);
-  ledDriver0.analogWrite(0, 255);
+  for (uint8_t index = 0; index < 16; ++index)
+  {
+    ledDriver0.analogWrite(index, 255);
+    ledDriver1.analogWrite(index, 255);
+    ledDriver2.analogWrite(index, 255);
+    ledDriver3.analogWrite(index, 255);
+  }
 
   // Init RMT and leave light OFF
   rgbLedWrite(ledBuildin, 0, 0, 0);
@@ -107,11 +124,4 @@ void setup()
 void loop()
 {
   //factoryResetIfBootIsPressed();
-
-  if (ledTimer0 > 1000)
-  {
-    ledState0 = not ledState0;
-    ledDriver0.analogWrite(0, ledState0 ? 255 : 0);
-    ledTimer0 = 0;
-  }
 }

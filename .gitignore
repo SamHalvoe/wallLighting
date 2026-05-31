@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/wallLighting/build/esp32.esp32.esp32h2/build.options.json
+/wallLighting/build/esp32.esp32.esp32h2/sdkconfig
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.bin
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.bootloader.bin
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.elf
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.map
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.merged.bin
