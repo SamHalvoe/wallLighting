@@ -4,20 +4,14 @@
 
 #include <Zigbee.h>
 #include <elapsedMillis.h>
-#include <Adafruit_AW9523.h>
 
+#include "ledDriver.hpp"
 #include "zbLight.hpp"
 
+uint8_t ledBuildin = RGB_BUILTIN;
 uint8_t bootButton = BOOT_PIN;
 elapsedSeconds timeSinceZigbeeNotConnected;
 const unsigned long ZIGBEE_NOT_CONNECTED_TIMEOUT = 300; // s
-
-Adafruit_AW9523 ledDriver0;
-Adafruit_AW9523 ledDriver1;
-Adafruit_AW9523 ledDriver2;
-Adafruit_AW9523 ledDriver3;
-elapsedMillis ledTimer0;
-bool ledState0 = false;
 
 void factoryResetIfBootIsPressed()
 {
@@ -85,36 +79,20 @@ void setupZigbee()
 
 void setup()
 {
-  // SCL on pin 22 & SDA on pin 12
-  ledDriver0.begin(AW9523_DEFAULT_ADDR);
-  ledDriver0.configureLEDMode(0xFFFF);
-  ledDriver1.begin(AW9523_DEFAULT_ADDR + 1);
-  ledDriver1.configureLEDMode(0xFFFF);
-  ledDriver2.begin(AW9523_DEFAULT_ADDR + 2);
-  ledDriver2.configureLEDMode(0xFFFF);
-  ledDriver3.begin(AW9523_DEFAULT_ADDR + 3);
-  ledDriver3.configureLEDMode(0xFFFF);
+  setupLEDDriver();
+  rgbLedWrite(ledBuildin, 0, 0, 0);
 
   Serial.begin(9600);
   elapsedMillis timeSinceSerialBegin;
   while (not Serial && timeSinceSerialBegin <= 5000) delay(100);
-  rgbLedWrite(ledBuildin, 0, 0, 0);
-  
-  for (uint8_t index = 0; index < 16; ++index)
-  {
-    ledDriver0.analogWrite(index, 255);
-    ledDriver1.analogWrite(index, 255);
-    ledDriver2.analogWrite(index, 255);
-    ledDriver3.analogWrite(index, 255);
-  }
 
   // Init RMT and leave light OFF
   rgbLedWrite(ledBuildin, 0, 0, 0);
   // Init button for factory reset
   pinMode(bootButton, INPUT_PULLUP);
 
-  //setupZBLight();
-  //setupZigbee();
+  setupZBLight();
+  setupZigbee();
 
   rgbLedWrite(ledBuildin, 255, 0, 0); // green
   delay(500);
@@ -123,5 +101,5 @@ void setup()
 
 void loop()
 {
-  //factoryResetIfBootIsPressed();
+  factoryResetIfBootIsPressed();
 }

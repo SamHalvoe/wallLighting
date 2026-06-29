@@ -368,3 +368,9 @@ FodyWeavers.xsd
 /wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.elf
 /wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.map
 /wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.merged.bin
+/wallLighting/build/esp32.esp32.esp32h2/flash_args
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.bootloader_flashed.bin
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino.partitions_flashed.bin
+/wallLighting/build/esp32.esp32.esp32h2/wallLighting.ino_flashed.bin
+/wallLighting/__vm/Compile.vmps.xml
+/wallLighting/__vm/Upload.vmps.xml
