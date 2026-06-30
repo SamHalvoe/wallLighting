@@ -4,7 +4,6 @@
 
 #include <Zigbee.h>
 #include <elapsedMillis.h>
-
 #include "ledDriver.hpp"
 #include "zbLight.hpp"
 
@@ -79,7 +78,7 @@ void setupZigbee()
 
 void setup()
 {
-  setupLEDDriver();
+  setupLEDDrivers();
   rgbLedWrite(ledBuildin, 0, 0, 0);
 
   Serial.begin(9600);

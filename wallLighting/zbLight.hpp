@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <Zigbee.h>
-
 #include "ledDriver.hpp"
 
 /* Zigbee dimmable light configuration */
