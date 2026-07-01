@@ -78,7 +78,7 @@ void setupZigbee()
 
 void setup()
 {
-  setupLEDDrivers();
+  ledDriver.setup();
   rgbLedWrite(ledBuildin, 0, 0, 0);
 
   Serial.begin(9600);
@@ -101,4 +101,5 @@ void setup()
 void loop()
 {
   factoryResetIfBootIsPressed();
+  ledDriver.runSparkling();
 }

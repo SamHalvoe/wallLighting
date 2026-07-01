@@ -5,18 +5,41 @@
 
 /* Zigbee dimmable light configuration */
 #define ZIGBEE_LIGHT_ENDPOINT 10
+#define SWITCH_ENDPOINT 11
 ZigbeeDimmableLight zbLight(ZIGBEE_LIGHT_ENDPOINT);
+ZigbeeLight zbSparklingSwitch(SWITCH_ENDPOINT);
+bool isSparklingModeOn = false;
 
-/********************* RGB LED functions **************************/
+/********************* Sparkling Switch functions **************************/
+
+void setSparklingMode(bool in_isOn)
+{
+  isSparklingModeOn = in_isOn;
+
+  if (isSparklingModeOn)
+  {
+    zbLight.setLightState(false); // disable light (turn off)
+    ledDriver.enabledSparkling();
+  }
+  else
+  {
+    ledDriver.disabledSparkling();
+  }
+}
+
+/********************* LED functions **************************/
+
 void setLight(bool in_state, uint8_t in_level)
 {
   if (in_state)
   {
-    setAllLEDs(in_level);
+    ledDriver.disabledSparkling();
+    zbSparklingSwitch.setLight(false); // disabled sparkling
+    ledDriver.setAll(in_level);
   }
   else
   {
-    setAllLEDs(0);
+    ledDriver.setAll(0);
   }
 }
 
@@ -24,6 +47,8 @@ void setLight(bool in_state, uint8_t in_level)
 void identify(uint16_t time)
 {
   static bool blink = true;
+  ledDriver.disabledSparkling();
+  zbSparklingSwitch.setLight(false); // disabled sparkling
 
   if (time == 0)
   {
@@ -32,18 +57,18 @@ void identify(uint16_t time)
     return;
   }
 
-  setAllLEDs(blink ? 255 : 0);
+  ledDriver.setAll(blink ? 255 : 0);
   blink = not blink;
 }
 
 void setupZBLight()
 {
-  // Set callback functions for RGB and Temperature modes
   zbLight.onLightChange(setLight);
-  // Optional: Set callback function for device identify
   zbLight.onIdentify(identify);
-  // Optional: Set Zigbee device name and model
   zbLight.setManufacturerAndModel("Halvoe", "EnterpriseLight");
-  // Add endpoint to Zigbee Core
+  zbSparklingSwitch.setManufacturerAndModel("Halvoe", "SparklingSwitch");
+  zbSparklingSwitch.onLightChange(setSparklingMode);
+  // Add endpoints to Zigbee Core
   Zigbee.addEndpoint(&zbLight);
+  Zigbee.addEndpoint(&zbSparklingSwitch);
 }
