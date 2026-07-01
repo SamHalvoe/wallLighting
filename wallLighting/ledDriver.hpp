@@ -21,11 +21,11 @@ class LEDDriver
     static const size_t m_ledCount = 64;
     std::array<LEDSparklingState, m_ledCount> m_ledSparklingStateList;
     std::array<uint8_t, m_ledCount> m_ledSparklingBrightnessList;
-    const uint16_t m_sparklingChance = 750;
+    const uint16_t m_sparklingChance = 800;
     const unsigned long m_sparklingFrameTime = 15; // ms
     elapsedMillis m_timeSinceSparklingFrameUpdate;
-    const uint16_t m_sparklingFadeUpSpeed = 48;
-    const uint16_t m_sparklingFadeDownSpeed = 8;
+    const uint16_t m_sparklingFadeUpSpeed = 24;
+    const uint16_t m_sparklingFadeDownSpeed = 4;
     bool m_isSparklingEnabled = false;
 
   private:
@@ -117,6 +117,7 @@ class LEDDriver
     void disabledSparkling()
     {
       m_isSparklingEnabled = false;
+      setAll(0);
     }
 
     void runSparkling()
