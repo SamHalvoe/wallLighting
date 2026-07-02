@@ -108,16 +108,24 @@ class LEDDriver
 
     void enabledSparkling()
     {
-      m_isSparklingEnabled = true;
-      m_ledSparklingStateList.fill(LEDSparklingState::off);
-      m_ledSparklingBrightnessList.fill(0);
-      setAll(0);
+      if (not m_isSparklingEnabled)
+      {
+        m_isSparklingEnabled = true;
+        m_ledSparklingStateList.fill(LEDSparklingState::off);
+        m_ledSparklingBrightnessList.fill(0);
+        setAll(0);
+      }
     }
 
     void disabledSparkling()
     {
-      m_isSparklingEnabled = false;
-      setAll(0);
+      if (m_isSparklingEnabled)
+      {
+        m_isSparklingEnabled = false;
+        m_ledSparklingStateList.fill(LEDSparklingState::off);
+        m_ledSparklingBrightnessList.fill(0);
+        setAll(0);
+      }
     }
 
     void runSparkling()
