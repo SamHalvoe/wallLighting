@@ -21,12 +21,14 @@ class LEDDriver
     static const size_t m_ledCount = 64;
     std::array<LEDSparklingState, m_ledCount> m_ledSparklingStateList;
     std::array<uint8_t, m_ledCount> m_ledSparklingBrightnessList;
-    const uint16_t m_sparklingChance = 800;
+    const uint16_t m_sparklingChance = 300;
     const unsigned long m_sparklingFrameTime = 15; // ms
     elapsedMillis m_timeSinceSparklingFrameUpdate;
-    const uint16_t m_sparklingFadeUpSpeed = 24;
-    const uint16_t m_sparklingFadeDownSpeed = 4;
+    const uint8_t m_sparklingFadeUpSpeed = 9;
+    const uint8_t m_sparklingFadeDownSpeed = 3;
+    const uint8_t m_offBrightness = 1;
     bool m_isSparklingEnabled = false;
+    bool m_isRunSparklingExecuted = false;
 
   private:
     void updateSparklingState()
@@ -60,7 +62,7 @@ class LEDDriver
         {
           if (m_ledSparklingBrightnessList[ledIndex] - m_sparklingFadeDownSpeed <= 0)
           {
-            m_ledSparklingBrightnessList[ledIndex] = 0;
+            m_ledSparklingBrightnessList[ledIndex] = m_offBrightness;
             m_ledSparklingStateList[ledIndex] = LEDSparklingState::off; // Sparkle is off
           }
           else
@@ -77,7 +79,7 @@ class LEDDriver
       {
         for (auto& ledDriver : m_ledDriverList)
         {
-          ledDriver.analogWrite(index, m_ledSparklingStateList[index] == LEDSparklingState::off ? 0 : m_ledSparklingBrightnessList[index]);
+          ledDriver.analogWrite(index, m_ledSparklingBrightnessList[index]);
         }
       }
     }
@@ -110,10 +112,10 @@ class LEDDriver
     {
       if (not m_isSparklingEnabled)
       {
-        m_isSparklingEnabled = true;
         m_ledSparklingStateList.fill(LEDSparklingState::off);
-        m_ledSparklingBrightnessList.fill(0);
+        m_ledSparklingBrightnessList.fill(m_offBrightness);
         setAll(0);
+        m_isSparklingEnabled = true;
       }
     }
 
@@ -121,10 +123,8 @@ class LEDDriver
     {
       if (m_isSparklingEnabled)
       {
-        m_isSparklingEnabled = false;
-        m_ledSparklingStateList.fill(LEDSparklingState::off);
-        m_ledSparklingBrightnessList.fill(0);
         setAll(0);
+        m_isSparklingEnabled = false;
       }
     }
 
@@ -135,6 +135,12 @@ class LEDDriver
         updateSparklingState();
         renderSparklingState();
         m_timeSinceSparklingFrameUpdate = 0;
+        m_isRunSparklingExecuted = true;
+      }
+      else if (not m_isSparklingEnabled && m_isRunSparklingExecuted)
+      {
+        setAll(0);
+        m_isRunSparklingExecuted = false;
       }
     }
 };

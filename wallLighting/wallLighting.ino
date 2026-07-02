@@ -102,4 +102,9 @@ void loop()
 {
   factoryResetIfBootIsPressed();
   ledDriver.runSparkling();
+
+  if (not zbLight.getLightState() && not zbSparklingSwitch.getLightState())
+  {
+    ledDriver.setAll(0);
+  }
 }
