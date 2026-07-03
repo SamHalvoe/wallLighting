@@ -24,7 +24,7 @@ class LEDDriver
     const uint16_t m_sparklingChance = 300;
     const unsigned long m_sparklingFrameTime = 15; // ms
     elapsedMillis m_timeSinceSparklingFrameUpdate;
-    const uint8_t m_sparklingFadeUpSpeed = 9;
+    const uint8_t m_sparklingFadeUpSpeed = 6;
     const uint8_t m_sparklingFadeDownSpeed = 3;
     const uint8_t m_offBrightness = 1;
     bool m_isSparklingEnabled = false;
