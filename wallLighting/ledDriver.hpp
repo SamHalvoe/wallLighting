@@ -21,26 +21,28 @@ class LEDDriver
     static const size_t m_ledCount = 64;
     std::array<LEDSparklingState, m_ledCount> m_ledSparklingStateList;
     std::array<uint8_t, m_ledCount> m_ledSparklingBrightnessList;
-    const uint16_t m_sparklingChance = 300;
+    const uint8_t m_maxSparkleCount = 32;
+    uint8_t m_sparkleCount = 0;
+    const uint16_t m_sparklingChance = 250;
     const unsigned long m_sparklingFrameTime = 15; // ms
     elapsedMillis m_timeSinceSparklingFrameUpdate;
     const uint8_t m_sparklingFadeUpSpeed = 6;
     const uint8_t m_sparklingFadeDownSpeed = 3;
-    const uint8_t m_offBrightness = 1;
+    const uint8_t m_offBrightness = 2;
     bool m_isSparklingEnabled = false;
     bool m_isRunSparklingExecuted = false;
 
   private:
     void updateSparklingState()
     {
-      if (random(1000) < m_sparklingChance)
+      if (m_sparkleCount < m_maxSparkleCount && random(1000) < m_sparklingChance)
       {
         size_t ledIndex = random(m_ledCount);
 
         if (m_ledSparklingStateList[ledIndex] == LEDSparklingState::off)
         {
+          ++m_sparkleCount;
           m_ledSparklingStateList[ledIndex] = LEDSparklingState::fadingUp;
-          m_ledSparklingBrightnessList[ledIndex] = 0;
         }
       }
 
@@ -60,8 +62,9 @@ class LEDDriver
         }
         else if (m_ledSparklingStateList[ledIndex] == LEDSparklingState::fadingDown)
         {
-          if (m_ledSparklingBrightnessList[ledIndex] - m_sparklingFadeDownSpeed <= 0)
+          if (m_ledSparklingBrightnessList[ledIndex] - m_sparklingFadeDownSpeed <= m_offBrightness)
           {
+            --m_sparkleCount;
             m_ledSparklingBrightnessList[ledIndex] = m_offBrightness;
             m_ledSparklingStateList[ledIndex] = LEDSparklingState::off; // Sparkle is off
           }
@@ -114,7 +117,8 @@ class LEDDriver
       {
         m_ledSparklingStateList.fill(LEDSparklingState::off);
         m_ledSparklingBrightnessList.fill(m_offBrightness);
-        setAll(0);
+        m_sparkleCount = 0;
+        setAll(m_offBrightness);
         m_isSparklingEnabled = true;
       }
     }

@@ -78,8 +78,14 @@ void setupZigbee()
 
 void setup()
 {
-  ledDriver.setup();
+  if (not setCpuFrequencyMhz(64))
+  {
+    rgbLedWrite(ledBuildin, 0, 255, 0); // red
+    delay(2000);
+  }
+
   rgbLedWrite(ledBuildin, 0, 0, 0);
+  ledDriver.setup();
 
   Serial.begin(9600);
   elapsedMillis timeSinceSerialBegin;
@@ -102,9 +108,4 @@ void loop()
 {
   factoryResetIfBootIsPressed();
   ledDriver.runSparkling();
-
-  if (not zbLight.getLightState() && not zbSparklingSwitch.getLightState())
-  {
-    ledDriver.setAll(0);
-  }
 }
