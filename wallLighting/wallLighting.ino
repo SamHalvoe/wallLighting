@@ -87,14 +87,20 @@ void setup()
   rgbLedWrite(ledBuildin, 0, 0, 0);
   ledDriver.setup();
 
-  Serial.begin(9600);
+  // used for debugging purposes
+  /*Serial.begin(9600);
   elapsedMillis timeSinceSerialBegin;
-  while (not Serial && timeSinceSerialBegin <= 5000) delay(100);
+  while (not Serial && timeSinceSerialBegin <= 5000) delay(100);*/
 
-  // Init RMT and leave light OFF
-  rgbLedWrite(ledBuildin, 0, 0, 0);
   // Init button for factory reset
   pinMode(bootButton, INPUT_PULLUP);
+
+  // set unused pins to INPUT_PULLDOWN to reduce power consumption
+  const std::array<uint8_t, 13> unusedPins{ 0, 1, 2, 3, 4, 5, 10, 11, 13, 14, 23, 24, 25 };
+  for (auto pin : unusedPins)
+  {
+    pinMode(pin, INPUT_PULLDOWN);
+  }
 
   setupZBLight();
   setupZigbee();
@@ -107,5 +113,5 @@ void setup()
 void loop()
 {
   factoryResetIfBootIsPressed();
-  ledDriver.runSparkling();
+  ledDriver.run();
 }

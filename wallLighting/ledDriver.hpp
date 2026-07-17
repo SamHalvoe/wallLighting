@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <array>
+#include <optional>
 #include <Adafruit_AW9523_CCS.h>
 #include <elapsedMillis.h>
 
@@ -30,7 +31,8 @@ class LEDDriver
     const uint8_t m_sparklingFadeDownSpeed = 3;
     const uint8_t m_offBrightness = 2;
     bool m_isSparklingEnabled = false;
-    bool m_isRunSparklingExecuted = false;
+    bool m_wasSparklingStateRendered = false;
+    std::optional<uint8_t> m_brightnessPromise;
 
   private:
     void updateSparklingState()
@@ -111,6 +113,11 @@ class LEDDriver
       }
     }
 
+    void setAllAsync(uint8_t in_brightness)
+    {
+      m_brightnessPromise = in_brightness;
+    }
+
     void enabledSparkling()
     {
       if (not m_isSparklingEnabled)
@@ -118,33 +125,34 @@ class LEDDriver
         m_ledSparklingStateList.fill(LEDSparklingState::off);
         m_ledSparklingBrightnessList.fill(m_offBrightness);
         m_sparkleCount = 0;
-        setAll(m_offBrightness);
         m_isSparklingEnabled = true;
       }
     }
 
     void disabledSparkling()
     {
-      if (m_isSparklingEnabled)
-      {
-        setAll(0);
-        m_isSparklingEnabled = false;
-      }
+      m_isSparklingEnabled = false;
     }
 
-    void runSparkling()
+    void run()
     {
       if (m_isSparklingEnabled && m_timeSinceSparklingFrameUpdate >= m_sparklingFrameTime)
       {
         updateSparklingState();
         renderSparklingState();
         m_timeSinceSparklingFrameUpdate = 0;
-        m_isRunSparklingExecuted = true;
+        m_wasSparklingStateRendered = true;
       }
-      else if (not m_isSparklingEnabled && m_isRunSparklingExecuted)
+      else if (m_brightnessPromise.has_value())
+      {
+        setAll(m_brightnessPromise.value());
+        m_brightnessPromise.reset();
+        m_wasSparklingStateRendered = false;
+      }
+      else if (not m_isSparklingEnabled && m_wasSparklingStateRendered)
       {
         setAll(0);
-        m_isRunSparklingExecuted = false;
+        m_wasSparklingStateRendered = false;
       }
     }
 };

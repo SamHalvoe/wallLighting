@@ -39,11 +39,11 @@ void setLight(bool in_state, uint8_t in_level)
       zbSparklingSwitch.setLight(false); // disabled sparkling
     }
     
-    ledDriver.setAll(in_level);
+    ledDriver.setAllAsync(in_level);
   }
   else
   {
-    ledDriver.setAll(0);
+    ledDriver.setAllAsync(0);
   }
 }
 
